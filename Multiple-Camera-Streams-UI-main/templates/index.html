@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CCTV Monitoring</title>
+    
+    <style>
+        body {
+            display: flex;
+            flex-direction: column; /* 헤더와 메인 컨텐츠를 세로로 정렬 */
+            align-items: center;
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px; /* 패딩을 왼쪽과 오른쪽에 추가 */
+            display: flex; /* Flexbox 사용 */
+            align-items: center; /* 수직 정렬 */
+            justify-content: flex-start; /* 왼쪽 정렬 */
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+        header img {
+            height: 40px; /* 이미지 높이 설정 */
+            margin-right: 10px; /* 이미지와 텍스트 사이의 간격 */
+        }
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 90px; /* 헤더 높이만큼의 마진 추가 */
+            width: 100%;
+        }
+        .camera-container {
+            border: 1px solid #ccc;
+            margin: 1px;
+            width: 30%;
+            height: 300px; /* 높이를 명시적으로 설정 */
+            box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+            background-color: #000;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .camera-container img, .camera-container .placeholder {
+            width: 100%;
+            height: 100%;
+            display: block;
+            position: absolute; /* position 속성 추가 */
+            top: 0;
+            left: 0;
+            background-color: #000; /* 검은색 배경 */
+        }
+        .camera-container h2 {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            margin: 0;
+            padding: 5px 10px;
+            background-color: rgba(0, 0, 0, 0.5);
+            color: #fff;
+            font-size: 1.2em;
+            z-index: 10; /* z-index 추가 */
+        }
+        .timestamp-container {
+            width: 90%;
+            margin: 10px;
+            padding: 1px;
+            text-align: center;
+            background-color: #333;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .timestamp {
+            font-size: 2em;
+            color: #FFC800;
+            letter-spacing: 10px;
+        }
+        .fullscreen {
+            position: fixed !important;
+            top: 60px; /* 헤더 높이만큼 내려오게 설정 */
+            left: 0;
+            width: 100% !important;
+            height: calc(100% - 60px) !important;
+            z-index: 9999;
+            cursor: default;
+        }
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(255, 0, 0, 0.3);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.9);
+            z-index: 10000; /* z-index 값을 높임 */
+            display: none;
+        }
+        .popup h2 {
+            margin: 0 0 10px 0;
+        }
+    </style>
+    <script>
+        function toggleFullscreen(element) {
+            // Check if element is already in fullscreen
+            if (element.classList.contains('fullscreen')) {
+                element.classList.remove('fullscreen');
+            } else {
+                // Remove fullscreen class from all elements
+                document.querySelectorAll('.camera-container').forEach(function(el) {
+                    el.classList.remove('fullscreen');
+                });
+                // Add fullscreen class to clicked element
+                element.classList.add('fullscreen');
+            }
+        }
+
+        function showAlertPopup(cameraName, timestamp, location, situation) {
+            var popup = document.getElementById("alertPopup");
+            popup.querySelector("#cameraName").innerText = cameraName;
+            popup.querySelector("#alertTimestamp").innerText = timestamp;
+            popup.querySelector("#location").innerText = location;
+            popup.querySelector("#situation").innerText = situation;
+            popup.style.display = "block";
+        }
+
+        function hideAlertPopup() {
+            document.getElementById("alertPopup").style.display = "none";
+            // Remove fullscreen class from all elements when popup is closed
+            document.querySelectorAll('.camera-container').forEach(function(el) {
+                el.classList.remove('fullscreen');
+            });
+        }
+
+        function handleCam5Click() {
+            var cam1 = document.querySelector('.camera-container[data-camera="1"]');
+            cam1.classList.add('fullscreen');
+            var now = new Date().toLocaleString();
+            showAlertPopup("CAM1", now, "Station A", "Emergency detected");
+        }
+
+        function startEventSource() {
+            console.log("Starting EventSource for /time");
+            var eventSource = new EventSource("/time");
+            eventSource.onmessage = function(event) {
+                console.log("Received time: ", event.data);
+                document.getElementById("timestamp").innerText = event.data;
+            };
+            eventSource.onerror = function(event) {
+                console.error("EventSource failed: ", event);
+            };
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            startEventSource();
+            document.querySelector('.camera-container[data-camera="5"]').addEventListener('click', handleCam5Click);
+            // Add event listener for fullscreen toggle
+            document.querySelectorAll('.camera-container').forEach(function(el) {
+                el.addEventListener('click', function() {
+                    if (el.classList.contains('fullscreen')) {
+                        el.classList.remove('fullscreen');
+                    } else {
+                        el.classList.add('fullscreen');
+                    }
+                });
+            });
+        });
+    </script>
+</head>
+<body>
+    <header>
+        <img src="/static/121990.png" alt="Logo"> <!-- 로컬 이미지 경로 -->
+        <h2 class="styled-text">
+            <span> OwO Emergency Monitoring System</span>
+        </h2>
+    </header>
+    <div class="main-content">
+        <div class="camera-container" data-camera="1">
+            <h2>CAM1</h2>
+            <img src="/video_feed/0" alt="CAM1">
+        </div>
+        <div class="camera-container" data-camera="2">
+            <h2>CAM2</h2>
+            <img src="/video_feed/1" alt="CAM2">
+        </div>
+        <div class="camera-container" data-camera="3">
+            <h2>CAM3</h2>
+            <div class="placeholder"></div>
+        </div>
+        <div class="camera-container" data-camera="4">
+            <h2>CAM4</h2>
+            <div class="placeholder"></div>
+        </div>
+        <div class="camera-container" data-camera="5">
+            <h2>CAM5</h2>
+            <div class="placeholder"></div>
+        </div>
+        <div class="camera-container" data-camera="6">
+            <h2>CAM6</h2>
+            <div class="placeholder"></div>
+        </div>
+        <div class="timestamp-container">
+            <div class="timestamp" id="timestamp">Loading...</div>
+        </div>
+    </div>
+    <div id="alertPopup" class="popup">
+        <h2>위급상황 발생</h2>
+        <p><strong>카메라:</strong> <span id="cameraName"></span></p>
+        <p><strong>발생시각:</strong> <span id="alertTimestamp"></span></p>
+        <p><strong>위치:</strong> <span id="location"></span></p>
+        <p><strong>상황:</strong> <span id="situation"></span></p>
+        <button onclick="hideAlertPopup()">닫기</button>
+    </div>
+</body>
+</html>
