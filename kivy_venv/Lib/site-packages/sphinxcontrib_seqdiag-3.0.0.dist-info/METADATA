@@ -1,0 +1,64 @@
+Metadata-Version: 2.1
+Name: sphinxcontrib-seqdiag
+Version: 3.0.0
+Summary: Sphinx "seqdiag" extension
+Home-page: https://github.com/blockdiag/sphinxcontrib-seqdiag
+Author: Takeshi KOMIYA
+Author-email: i.tkomiya@gmail.com
+License: BSD
+Platform: any
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Environment :: Web Environment
+Classifier: Framework :: Sphinx :: Extension
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3 :: Only
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Topic :: Documentation
+Classifier: Topic :: Documentation :: Sphinx
+Classifier: Topic :: Utilities
+Requires-Python: >=3.7
+License-File: LICENSE
+License-File: AUTHORS
+Requires-Dist: blockdiag (>=1.5.0)
+Requires-Dist: seqdiag (>=0.9.3)
+Requires-Dist: Sphinx (>=2.0)
+
+=====================
+sphinxcontrib-seqdiag
+=====================
+
+.. image:: https://travis-ci.org/blockdiag/sphinxcontrib-seqdiag.svg?branch=master
+   :target: https://travis-ci.org/blockdiag/sphinxcontrib-seqdiag
+
+.. image:: https://coveralls.io/repos/blockdiag/sphinxcontrib-seqdiag/badge.png?branch=master
+   :target: https://coveralls.io/r/blockdiag/sphinxcontrib-seqdiag?branch=master
+
+.. image:: https://codeclimate.com/github/blockdiag/sphinxcontrib-seqdiag/badges/gpa.svg
+   :target: https://codeclimate.com/github/blockdiag/sphinxcontrib-seqdiag
+
+A sphinx extension for embedding sequence diagram using seqdiag_.
+
+This extension enables you to insert sequence diagrams into your document.
+Following code is an example::
+
+   .. seqdiag::
+
+      seqdiag {
+        browser => webserver => database;
+      }
+
+.. _seqdiag: http://bitbucket.org/blockdiag/seqdiag/
+
+
+For more details, see `online documentation`_ at http://blockdiag.com/.
+
+.. _online documentation: http://blockdiag.com/en/seqdiag/sphinxcontrib.html
+
+
